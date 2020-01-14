@@ -1,5 +1,5 @@
 {
-  "name": "andreykin/api-php-client-smsgate-beeline",
+  "name": "andreykin/api-beeline-php-client",
   "require": {
     "php-http/client-implementation": "^1.0",
     "php-http/client-common": "^2.0",

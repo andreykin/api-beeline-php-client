@@ -48,12 +48,8 @@ class BeelineSmsClient
         $result = [];
 
         if ($response->getStatusCode() == 200) {
-            // TODO: XML
-            $lines = preg_split('/\n|\r/', $response->getBody()->getContents(), null, PREG_SPLIT_NO_EMPTY);
-            foreach ($lines as $line) {
-                parse_str($line, $res);
-                $result[] = $res;
-            }
+            // parse XML
+            $result = BeelineResponseParser::parseXML($response->getBody()->getContents());
         }
 
         return $result;
@@ -131,7 +127,7 @@ class BeelineSmsClient
             'show_description' => $show_description,
         ];
 
-        return $this->apiCall('?', $params);
+        return $this->apiCall('/?', $params);
     }
 
 
@@ -225,6 +221,6 @@ class BeelineSmsClient
             'smstype' => $smstype,
         ];
 
-        return $this->apiCall('?', $params);
+        return $this->apiCall('/?', $params);
     }
 }

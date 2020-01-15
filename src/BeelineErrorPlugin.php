@@ -69,7 +69,8 @@ class BeelineErrorPlugin implements Plugin
         }
 
         if ($response->getStatusCode() == 200) {
-            $result = BeelineResponseParser::parseXML($response->getBody()->getContents());
+            // не ->getContents() из-за бага в сдвиге указателя на конец
+            $result = BeelineResponseParser::parseXML($response->getBody()->__toString());
 
             $errors401 = [
                 'User authentication failed',

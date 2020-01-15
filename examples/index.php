@@ -1,27 +1,29 @@
-{
-    "repositories": [
-        {
-            "type": "git",
-            "url": "/Users/andrey/PhpstormProjects/smsgate/.git"
-        }
-    ],
-    "require": {
-        "php-http/guzzle6-adapter": "^2.0",
-        "andreykin/smsgate-nevo-php-client": "dev-master"
-    }
-}
-
+<?php
 require "vendor/autoload.php";
 
 use Beeline\BeelineSmsClient;
 use Beeline\HttpClientFactory;
 
-$apiClient = new BeelineSmsClient(HttpClientFactory::create('SERVERURL', 'USER', 'PASS'));
+echo "<pre>";
 
-// отправка сообщения
-$result = $apiClient->send(['PHONE1','PHONE2'], 'Тест сообщения');
+$apiClient = new BeelineSmsClient(HttpClientFactory::create('http://web/test/fixtures/sms_send', 'demo', 'demo', []));
+
+echo 'отправка сообщения общим способом';
+$result = $apiClient->post_sms('групповое сообщение и ответ в виде массива', ['78125557711', '79065557711']);
 var_dump($result);
 
-// статус сообщения для одного адресата
-$result = $apiClient->msg("MESSAGEID");
+echo 'отправка сообщения простым запросом';
+$result = $apiClient->actionSendSmsByPhone('групповое сообщение и ответ в виде массива', ['78125557711', '79065557711']);
+var_dump($result);
+
+echo 'статус сообщения';
+$result = $apiClient->status('1');
+var_dump($result);
+
+echo 'мультизапрос';
+$apiClient->initMultiPost();
+$apiClient->actionSendSmsByPhone('групповое сообщение и ответ в виде массива', ['78125557711', '79065557711']);
+$apiClient->status('1');
+$apiClient->status('2');
+$result = $apiClient->processMultiPost();
 var_dump($result);

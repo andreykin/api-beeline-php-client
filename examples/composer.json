@@ -1,0 +1,12 @@
+{
+  "repositories": [
+    {
+      "type": "git",
+      "url": "/Users/andrey/PhpstormProjects/rosohrana_api-beeline/.git"
+    }
+  ],
+  "require": {
+    "php-http/guzzle6-adapter": "^2.0",
+    "andreykin/api-beeline-php-client": "dev-crunch"
+  }
+}

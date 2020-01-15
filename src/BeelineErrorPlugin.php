@@ -36,7 +36,7 @@ class BeelineErrorPlugin implements Plugin
      *
      * @return ResponseInterface
      * @throws Beeline301Exception Если код ответа 200, но пользователь не авторизован
-     * @throws Beeline401Exception Если код ответа 401
+     * @throws Beeline401Exception Если код ответа 301
      * @throws Beeline404Exception Если код ответа 404
      */
     private function transformResponseToException(

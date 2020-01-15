@@ -25,7 +25,7 @@ class HttpClientFactory
      * @param string|null $ip IP адрес клиента (не обязательный параметр)
      * @param string|null $comment описание подключения (не обязательный параметр; до 512 символов)
      *
-     * usage $myApiClient = new Beeline\BeelineClient(Beeline\HttpClientFactory::create('https://api.example.org', 'john', 's3cr3t'));
+     * usage $myApiClient = new Beeline\BeelineClient(Beeline\HttpClientFactory::create('https://beeline.amega-inform.ru/', 'john', 's3cr3t'));
      *
      * @return HttpClient
      */

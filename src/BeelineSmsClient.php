@@ -17,6 +17,19 @@ class BeelineSmsClient
     private $httpClient;
 
     /**
+     * Данные, передаваемые на сервер
+     * @var array
+     */
+    public $post_data = [];
+
+    /**
+     * Множественный запрос
+     * по умолчанию false
+     * @var bool
+     */
+    public $multipost = false;
+
+    /**
      * Фабрика запросов HTTP
      * @var RequestFactory
      */

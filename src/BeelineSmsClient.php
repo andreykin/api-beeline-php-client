@@ -27,7 +27,7 @@ class BeelineSmsClient
      * по умолчанию false
      * @var bool
      */
-    public $multipost = false;
+    public $isMultiPost = false;
 
     /**
      * Фабрика запросов HTTP
@@ -39,6 +39,42 @@ class BeelineSmsClient
     {
         $this->httpClient = $httpClient ?: HttpClientDiscovery::find();
         $this->requestFactory = $requestFactory ?: MessageFactoryDiscovery::find();
+    }
+
+    /**
+     * Команда на начало мультизапроса
+     */
+    public function initMultiPost()
+    {
+        $this->isMultiPost = true;
+    }
+
+    /**
+     * Команда на конец мультизапроса
+     */
+    public function deInitMultiPost()
+    {
+        $this->isMultiPost = false;
+        $this->postData = [];
+    }
+
+    /**
+     * Добавить данные к мультизапросу
+     * @param $params
+     */
+    public function addToMultiPost($params)
+    {
+        $this->postData['data'][] = $params;
+    }
+
+    /**
+     * Команда на процессинг мультизапроса и получение результата
+     */
+    public function processMultiPost()
+    {
+        $result = $this->getPostRequest($this->postData);
+        $this->postData = [];
+        return $result;
     }
 
     /**
@@ -159,7 +195,11 @@ class BeelineSmsClient
             'show_description' => $show_description,
         ];
 
-        return $this->getPostRequest($params);
+        if ($this->isMultiPost) {
+            $this->addToMultiPost($params);
+        } else {
+            return $this->getPostRequest($params);
+        }
     }
 
 
@@ -254,6 +294,34 @@ class BeelineSmsClient
             'smstype' => $smstype,
         ];
 
-        return $this->getPostRequest($params);
+        if ($this->isMultiPost) {
+            $this->addToMultiPost($params);
+        } else {
+            return $this->getPostRequest($params);
+        }
+    }
+
+    /**
+     * Отправить СМС на номера телефонов
+     * @param $message
+     * @param $phones
+     * @param null $sender
+     * @return array
+     * @throws Exception
+     */
+    public function actionSendSmsByPhone($message, $phones, $sender = null)
+    {
+        return $this->post_sms($message, $phones, [], $sender);
+    }
+
+    /**
+     * Получить статус СМС по её внутреннему id
+     * @param int $sms_id
+     * @return array
+     * @throws Exception
+     */
+    public function actionStatusSmsById(int $sms_id)
+    {
+        return $this->status($sms_id);
     }
 }

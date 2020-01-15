@@ -20,7 +20,7 @@ class BeelineSmsClient
      * Данные, передаваемые на сервер
      * @var array
      */
-    public $post_data = [];
+    public $postData = [];
 
     /**
      * Множественный запрос
@@ -42,20 +42,26 @@ class BeelineSmsClient
     }
 
     /**
-     * Выполняет произвольный запрос
+     * Выполняет произвольный запрос к API
      *
      * @param $uri
      * @param array $params
-     * @return array
+     * @param string $method
+     * @return array|SimpleXMLElement
      * @throws Exception
      */
-    public function apiCall($uri, $params = [])
+    public function apiCall($uri, $params = [], $method = 'GET')
     {
         // удалить пустые значения
         $params = array_filter($params);
-        $uri .= http_build_query($params);
+        if ($method == 'GET') {
+            $uri .= http_build_query($params);
+            $request = $this->requestFactory->createRequest($method, $uri);
+        } else {
+            $request = $this->requestFactory->createRequest($method, $uri, [], http_build_query($params));
+            $request = $request->withHeader('Content-Type', 'application/x-www-form-urlencoded');
+        }
 
-        $request = $this->requestFactory->createRequest('GET', $uri);
         $response = $this->httpClient->sendRequest($request);
 
         $result = [];
@@ -67,6 +73,17 @@ class BeelineSmsClient
         }
 
         return $result;
+    }
+
+    /**
+     * Выполняет POST-запрос к API
+     * @param $params
+     * @return array
+     * @throws Exception
+     */
+    public function getPostRequest($params)
+    {
+        return $this->apiCall('/?', $params, $method = 'POST');
     }
 
     /**
@@ -92,7 +109,8 @@ class BeelineSmsClient
         $sender = null,
         $time_period = [],
         $show_description = null
-    ) {
+    )
+    {
         // http://<ip_address>:<port>/sms_send/?action=post_sms&user=<пользователь>&pass=<пароль>&target=<телефоны>&message=<сообщение>
 
         // Пример:
@@ -141,7 +159,7 @@ class BeelineSmsClient
             'show_description' => $show_description,
         ];
 
-        return $this->apiCall('/?', $params);
+        return $this->getPostRequest($params);
     }
 
 
@@ -167,7 +185,8 @@ class BeelineSmsClient
         $date_from = null,
         $date_to = null,
         $smstype = null
-    ) {
+    )
+    {
         // http://<ip_address>:<port>/sms_send/?action=status&user=<пользователь>&pass=<пароль>&sms_id=<id_смс>
 
         // Пример:
@@ -235,6 +254,6 @@ class BeelineSmsClient
             'smstype' => $smstype,
         ];
 
-        return $this->apiCall('/?', $params);
+        return $this->getPostRequest($params);
     }
 }

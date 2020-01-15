@@ -51,15 +51,10 @@ class HttpClientFactory
         if ($gzip == false) {
             $params['gzip'] = 'none';
         }
-        if ($lang) {
-            $params['HTTP_ACCEPT_LANGUAGE'] = $lang;
-        }
-        if ($ip) {
-            $params['CLIENTADR'] = $ip;
-        }
-        if ($comment) {
-            $params['comment'] = $comment;
-        }
+
+        $params['HTTP_ACCEPT_LANGUAGE'] = $lang ?? $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? false;
+        $params['CLIENTADR'] = $ip ?? $_SERVER['REMOTE_ADDR'] ?? false;
+        $params['comment'] = $comment;
 
         $plugins[] = new AuthenticationPlugin(
             new QueryParam($params)

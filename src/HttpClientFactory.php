@@ -25,7 +25,7 @@ class HttpClientFactory
      * @param string|null $ip IP адрес клиента (не обязательный параметр)
      * @param string|null $comment описание подключения (не обязательный параметр; до 512 символов)
      *
-     * usage $myApiClient = new Beeline\BeelineClient(Beeline\HttpClientFactory::create('https://beeline.amega-inform.ru/', 'john', 's3cr3t'));
+     * usage $myApiClient = new Beeline\BeelineClient(Beeline\HttpClientFactory::create('https://beeline.amega-inform.ru/sms_send', 'john', 's3cr3t'));
      *
      * @return HttpClient
      */
@@ -39,24 +39,25 @@ class HttpClientFactory
         $lang = null,
         $ip = null,
         $comment = null
-    ) {
+    )
+    {
         if (!$client) {
             $client = HttpClientDiscovery::find();
         }
         $plugins[] = new BeelineErrorPlugin();
 
-        $params = ['user' => $user, '$pass' => $pass];
+        $params = ['user' => $user, 'pass' => $pass];
 
         if ($gzip == false) {
             $params['gzip'] = 'none';
         }
-        if (!empty($lang)) {
+        if ($lang) {
             $params['HTTP_ACCEPT_LANGUAGE'] = $lang;
         }
-        if (!empty($ip)) {
+        if ($ip) {
             $params['CLIENTADR'] = $ip;
         }
-        if (!empty($comment)) {
+        if ($comment) {
             $params['comment'] = $comment;
         }
 
@@ -65,7 +66,7 @@ class HttpClientFactory
         );
 
         if ($host) {
-            $plugins[] = new Plugin\BaseUriPlugin(UriFactoryDiscovery::find()->createUri($host . '/sms_send/'));
+            $plugins[] = new Plugin\BaseUriPlugin(UriFactoryDiscovery::find()->createUri($host));
         }
 
         return new PluginClient($client, $plugins);

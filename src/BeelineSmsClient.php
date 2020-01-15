@@ -61,12 +61,9 @@ class BeelineSmsClient
         $result = [];
 
         if ($response->getStatusCode() == 200) {
-            // TODO: XML
-            $lines = preg_split('/\n|\r/', $response->getBody()->getContents(), null, PREG_SPLIT_NO_EMPTY);
-            foreach ($lines as $line) {
-                parse_str($line, $res);
-                $result[] = $res;
-            }
+            // parse XML
+            //var_dump($response->getBody()->__toString());
+            $result = BeelineResponseParser::parseXML($response->getBody()->__toString());
         }
 
         return $result;
@@ -90,8 +87,8 @@ class BeelineSmsClient
      */
     public function post_sms(
         $message,
-        $target,
-        $phl_codename,
+        $target = null,
+        $phl_codename = null,
         $sender = null,
         $time_period = [],
         $show_description = null
@@ -121,9 +118,9 @@ class BeelineSmsClient
         //          <sms id="99991" smstype="SENDSMS" phone="+79999999991"><![CDATA[Привет]]></sms>
         //          <sms id="99992" smstype="SENDSMS" phone="+79999999992"><![CDATA[Привет]]></sms>
         //      </result>
-        //  <errors>
-        //      <error>Неправильный номер телефона: +7999999999999</error>
-        //  </errors>
+        //      <errors>
+        //          <error>Неправильный номер телефона: +7999999999999</error>
+        //      </errors>
         //  </output>
 
         if (is_array($target)) {
@@ -144,7 +141,7 @@ class BeelineSmsClient
             'show_description' => $show_description,
         ];
 
-        return $this->apiCall('?', $params);
+        return $this->apiCall('/?', $params);
     }
 
 
@@ -238,6 +235,6 @@ class BeelineSmsClient
             'smstype' => $smstype,
         ];
 
-        return $this->apiCall('?', $params);
+        return $this->apiCall('/?', $params);
     }
 }

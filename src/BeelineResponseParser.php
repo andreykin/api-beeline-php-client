@@ -2,6 +2,8 @@
 
 namespace Beeline;
 
+use SimpleXMLElement;
+
 class BeelineResponseParser
 {
     /**
@@ -10,6 +12,6 @@ class BeelineResponseParser
      */
     public static function parseXML(string $content)
     {
-        return new \SimpleXMLElement($content);
+        return new SimpleXMLElement($content);
     }
 }

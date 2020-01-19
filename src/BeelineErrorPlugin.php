@@ -6,6 +6,7 @@ namespace Beeline;
 use Http\Client\Common\Plugin;
 use Http\Promise\Promise;
 use Beeline\Exception\Beeline301Exception;
+use Beeline\Exception\Beeline400Exception;
 use Beeline\Exception\Beeline401Exception;
 use Beeline\Exception\Beeline404Exception;
 use Psr\Http\Message\RequestInterface;
@@ -72,10 +73,19 @@ class BeelineErrorPlugin implements Plugin
             // не ->getContents() из-за бага в сдвиге указателя на конец
             $result = BeelineResponseParser::parseXML($response->getBody()->__toString());
 
+            $errors400 = [
+                'Invalid request',
+            ];
+
             $errors401 = [
                 'User authentication failed',
                 'Ошибка авторизации пользователя'
             ];
+
+            if (in_array($result->errors->error, $errors400)) {
+                throw new Beeline400Exception($result->errors->error,
+                    $request, $response);
+            }
 
             if (in_array($result->errors->error, $errors401)) {
                 throw new Beeline401Exception($result->errors->error,

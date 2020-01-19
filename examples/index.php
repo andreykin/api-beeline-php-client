@@ -27,3 +27,8 @@ $apiClient->status('1');
 $apiClient->status('2');
 $result = $apiClient->processMultiPost();
 var_dump($result);
+
+
+echo 'просто неправильный запрос к api';
+$result = $apiClient->apiCall("/?dfsdfsf");
+var_dump($result);

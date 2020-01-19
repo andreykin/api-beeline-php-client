@@ -1,16 +1,40 @@
 <?php
+
+// http://coffeerings.posterous.com/php-simplexml-and-cdata
+class SimpleXMLExtended extends SimpleXMLElement
+{
+    public function addCData($cdata_text)
+    {
+        $node = dom_import_simplexml($this);
+        $no = $node->ownerDocument;
+        $node->appendChild($no->createCDATASection($cdata_text));
+    }
+}
+
 header("Content-type: text/xml;charset=UTF-8");
 //var_dump($_POST);
 //var_dump($_GET);
-extract($_GET);
-extract($_POST);
+
+if (!empty($_POST)) {
+    extract($_POST);
+} else {
+    extract($_GET);
+}
 
 // test 401
+
+if (!$action || !$user || !$pass) {
+    $xml = new \SimpleXMLExtended("output.xml", 0, true);
+    addRequestError($xml);
+    echo $xml->asXML();
+    die();
+}
+
 if ((!$user || !$pass) || ($user != 'demo' || $pass != 'demo')) {
-    $xml = new SimpleXMLExtended("401.xml", 0, true);
+    $xml = new \SimpleXMLExtended("401.xml", 0, true);
     echo $xml->asXML();
 } else {
-    $xml = new SimpleXMLExtended("output.xml", 0, true);
+    $xml = new \SimpleXMLExtended("output.xml", 0, true);
 
     $requests = [];
 
@@ -155,21 +179,12 @@ function addMessageStatus(SimpleXMLExtended &$xml, $sms_id, $sender = 'SenderNam
 function addRequestError(&$xml, $message = 'Invalid request')
 {
     $errors = $xml->addChild('errors');
-    $error = $errors->addChild('error', 'Invalid request');
-    if ($message) {
-        $error = $errors->addChild('error', $message);
-    }
-    $error->addAttribute('code', '-20200');
-}
-
-// http://coffeerings.posterous.com/php-simplexml-and-cdata
-class SimpleXMLExtended extends SimpleXMLElement
-{
-    public function addCData($cdata_text)
-    {
-        $node = dom_import_simplexml($this);
-        $no = $node->ownerDocument;
-        $node->appendChild($no->createCDATASection($cdata_text));
+    //$error = $errors->addChild('error', 'Invalid request');
+    //if ($message) {
+    $error = $errors->addChild('error', $message);
+    //}
+    if ($message == 'Invalid request') {
+        $error->addAttribute('code', '-20200');
     }
 }
 

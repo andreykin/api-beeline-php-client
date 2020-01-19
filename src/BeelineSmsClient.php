@@ -7,7 +7,6 @@ use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
 use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\MessageFactoryDiscovery;
-use SimpleXMLElement;
 
 class BeelineSmsClient
 {
@@ -84,7 +83,7 @@ class BeelineSmsClient
      * @param $uri
      * @param array $params
      * @param string $method
-     * @return SimpleXMLElement
+     * @return array|SimpleXMLElement
      * @throws Exception
      */
     public function apiCall($uri, $params = [], $method = 'GET')
@@ -101,19 +100,21 @@ class BeelineSmsClient
 
         $response = $this->httpClient->sendRequest($request);
 
+        $result = [];
+
         if ($response->getStatusCode() == 200) {
             // parse XML
             //var_dump($response->getBody()->__toString());
-            return BeelineResponseParser::parseXML($response->getBody()->__toString());
+            $result = BeelineResponseParser::parseXML($response->getBody()->__toString());
         }
 
-        return new SimpleXMLElement();
+        return $result;
     }
 
     /**
      * Выполняет POST-запрос к API
      * @param $params
-     * @return SimpleXMLElement
+     * @return array
      * @throws Exception
      */
     public function getPostRequest($params)
@@ -134,7 +135,7 @@ class BeelineSmsClient
      * @param boolean $show_description отображать текстовую расшифровку финального статуса.
      *        Если в GET или POST-запросе указать show_description=true, то в ответном XML платформа будет передавать поле с расшифровкой статуса
      *
-     * @return SimpleXMLElement
+     * @return array
      * @throws Exception
      */
     public function post_sms(
@@ -215,7 +216,7 @@ class BeelineSmsClient
      * @param null $date_from dd.mm.yyyy hh:ii:ss (дд.мм.гггг чч:ми:сс)
      * @param null $date_to dd.mm.yyyy hh:ii:ss (дд.мм.гггг чч:ми:сс
      * @param string|null $smstype типу сообщений SENDSMS текстовые СМС сообщения
-     * @return SimpleXMLElement
+     * @return array
      * @throws Exception
      */
     public function status(
@@ -305,7 +306,7 @@ class BeelineSmsClient
      * @param $message
      * @param $phones
      * @param null $sender
-     * @return SimpleXMLElement
+     * @return array
      * @throws Exception
      */
     public function actionSendSmsByPhone($message, $phones, $sender = null)
@@ -315,11 +316,11 @@ class BeelineSmsClient
 
     /**
      * Получить статус СМС по её внутреннему id
-     * @param $sms_id
-     * @return SimpleXMLElement
+     * @param int $sms_id
+     * @return array
      * @throws Exception
      */
-    public function actionStatusSmsById($sms_id)
+    public function actionStatusSmsById(int $sms_id)
     {
         return $this->status($sms_id);
     }

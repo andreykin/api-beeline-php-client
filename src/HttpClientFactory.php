@@ -8,7 +8,6 @@ use Http\Client\Common\Plugin;
 use Http\Client\Common\Plugin\AuthenticationPlugin;
 use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\UriFactoryDiscovery;
-use Http\Message\Authentication\QueryParam;
 
 class HttpClientFactory
 {
@@ -57,7 +56,7 @@ class HttpClientFactory
         $params['comment'] = $comment;
 
         $plugins[] = new AuthenticationPlugin(
-            new QueryParam($params)
+            new PostParam($params)
         );
 
         if ($host) {

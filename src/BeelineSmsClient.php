@@ -315,11 +315,11 @@ class BeelineSmsClient
 
     /**
      * Получить статус СМС по её внутреннему id
-     * @param int $sms_id
+     * @param $sms_id
      * @return SimpleXMLElement
      * @throws Exception
      */
-    public function actionStatusSmsById(int $sms_id)
+    public function actionStatusSmsById($sms_id)
     {
         return $this->status($sms_id);
     }
